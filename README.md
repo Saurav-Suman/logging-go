@@ -1,2 +1,2 @@
-# logging-go
+# logging-go (Under development)
 Golang logging library
