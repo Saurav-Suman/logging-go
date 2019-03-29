@@ -14,7 +14,7 @@ const (
 	levelDebug
 )
 
-// Translation map from level to string representation
+// Map
 var levelStrings = map[int]string{
 	levelDebug: "DEBUG",
 	levelInfo:  "INFO",
