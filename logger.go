@@ -2,8 +2,15 @@ package logger
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
+
+type loggerConfig struct {
+	slackURL         string
+	loggerTimeFormat string
+	loggerStream     string
+}
 
 // Log levels
 const (
@@ -100,5 +107,19 @@ func LogMe(logLevel int, format string, a ...interface{}) {
 		msg = fmt.Sprintln(a...)
 	}
 	fmt.Printf("%s: %s %s", now.Format(time.RFC3339), levelDecoration, msg)
+
+}
+
+// Fetching configs from environment variables
+func fetchConfigFromEnv() loggerConfig {
+
+	return loggerConfig{
+		slackURL:         os.Getenv("LOGGER_SLACK_URL"),
+		loggerTimeFormat: os.Getenv("LOGGER_DATETIME_FORMAT"),
+		loggerStream:     os.Getenv("LOGGER_STREAM"),
+	}
+}
+
+func init() {
 
 }
