@@ -2,31 +2,37 @@ package publisher
 
 import (
 	"log"
+	"os"
 
 	"github.com/streadway/amqp"
 )
 
-func main() {
-	//Make a connection
-	conn, _ := amqp.Dial("amqp://guest:guest@localhost:5672/")
+func sendThisErrorOnPriority(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
+func publisher() {
+	conn, err := amqp.Dial(os.Getenv("LOGGER_RMQ_URL"))
+	sendThisErrorOnPriority(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
-	//Ccreate a channel
-	ch, _ := conn.Channel()
+	ch, err := conn.Channel()
+	sendThisErrorOnPriority(err, "Failed to open a channel")
 	defer ch.Close()
 
-	//Declare a queue
 	q, err := ch.QueueDeclare(
-		"hello", // name of the queue
-		false,   // should the message be persistent? also queue will survive if the cluster gets reset
-		false,   // autodelete if there's no consumers (like queues that have anonymous names, often used with fanout exchange)
-		false,   // exclusive means I should get an error if any other consumer subsribes to this queue
-		false,   // no-wait means I don't want RabbitMQ to wait if there's a queue successfully setup
-		nil,     // arguments for more advanced configuration
+		os.Getenv("LOGGER_RMQ_TOPIC"), // name
+		false, // should the message be persistent? also queue will survive if the cluster gets reset
+		false, // autodelete if there's no consumers (like queues that have anonymous names, often used with fanout exchange)
+		false, // exclusive means I should get an error if any other consumer subsribes to this queue
+		false, // no-wait means I don't want RabbitMQ to wait if there's a queue successfully setup
+		nil,   // arguments for more advanced configuration
 	)
+	sendThisErrorOnPriority(err, "Failed to declare a queue")
 
-	//Publish a message
-	body := "hello world"
+	body := "Hello World!"
 	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
@@ -36,6 +42,5 @@ func main() {
 			ContentType: "text/plain",
 			Body:        []byte(body),
 		})
-	log.Printf("Message: %s", body)
-
+	sendThisErrorOnPriority(err, "Failed to publish a message")
 }
