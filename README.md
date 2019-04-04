@@ -4,7 +4,7 @@
 
 # _Another_ logging library, Why?
 
-> Logging libraries are like opinions, everyone seems to have one depends upon the need.
+> Logging libraries are like opinions, everyone needs one depends upon the need.
 
 
 ## And how is `logging-go` different?
