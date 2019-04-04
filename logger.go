@@ -2,8 +2,21 @@ package logger
 
 import (
 	"fmt"
+	publisher "logging-go/Publisher"
+	slack "logging-go/Slack"
 	"time"
 )
+
+type Conf map[string]string
+
+type Fields map[string]interface{}
+
+type LoggerConfig struct {
+	SlackURL         string
+	LoggerTimeFormat string
+	RabbitmqURL      string
+	RabbitmqQueue    string
+}
 
 // Log levels
 const (
@@ -23,52 +36,52 @@ var levelStrings = map[int]string{
 	levelCrit:  "CRITICAL",
 }
 
-func Debug(a ...interface{}) {
-	LogMe(levelDebug, "", a...)
+func Debug(l LoggerConfig, destination string, a ...interface{}) {
+	LogMe(l, destination, levelDebug, "", a...)
 }
 
-func Debugf(format string, a ...interface{}) {
-	LogMe(levelDebug, format, a...)
+func Debugf(l LoggerConfig, destination string, format string, a ...interface{}) {
+	LogMe(l, destination, levelDebug, format, a...)
 }
 
-func Info(a ...interface{}) {
-	LogMe(levelInfo, "", a...)
+func Info(l LoggerConfig, destination string, a ...interface{}) {
+	LogMe(l, destination, levelInfo, "", a...)
 }
 
-func Infof(format string, a ...interface{}) {
-	LogMe(levelInfo, format, a...)
+func Infof(l LoggerConfig, destination string, format string, a ...interface{}) {
+	LogMe(l, destination, levelInfo, format, a...)
 }
 
-func Println(a ...interface{}) {
-	LogMe(levelInfo, "", a...)
+func Println(l LoggerConfig, destination string, a ...interface{}) {
+	LogMe(l, destination, levelInfo, "", a...)
 }
 
-func Printf(format string, a ...interface{}) {
-	LogMe(levelInfo, format, a...)
+func Printf(l LoggerConfig, destination string, format string, a ...interface{}) {
+	LogMe(l, destination, levelInfo, format, a...)
 }
 
-func Warn(a ...interface{}) {
-	LogMe(levelWarn, "", a...)
+func Warn(l LoggerConfig, destination string, a ...interface{}) {
+	LogMe(l, destination, levelWarn, "", a...)
 }
 
-func Warnf(format string, a ...interface{}) {
-	LogMe(levelWarn, format, a...)
+func Warnf(l LoggerConfig, destination string, format string, a ...interface{}) {
+	LogMe(l, destination, levelWarn, format, a...)
 }
 
-func Error(a ...interface{}) {
-	LogMe(levelErr, "", a...)
+func Error(l LoggerConfig, destination string, a ...interface{}) {
+	LogMe(l, destination, levelErr, "", a...)
 }
 
-func Errorf(format string, a ...interface{}) {
-	LogMe(levelErr, format, a...)
+func Errorf(l LoggerConfig, destination string, format string, a ...interface{}) {
+	LogMe(l, destination, levelErr, format, a...)
 }
 
-func Critical(a ...interface{}) {
-	LogMe(levelCrit, "", a...)
+func Critical(l LoggerConfig, destination string, a ...interface{}) {
+	LogMe(l, destination, levelCrit, "", a...)
 }
 
-func Criticalf(format string, a ...interface{}) {
-	LogMe(levelCrit, format, a...)
+func Criticalf(l LoggerConfig, destination string, format string, a ...interface{}) {
+	LogMe(l, destination, levelCrit, format, a...)
 }
 
 /*
@@ -90,15 +103,29 @@ func Criticalf(format string, a ...interface{}) {
 	StampNano  = "Jan _2 15:04:05.000000000"
 */
 
-func LogMe(logLevel int, format string, a ...interface{}) {
+func LogMe(l LoggerConfig, destination string, logLevel int, format string, data ...interface{}) {
 	now := time.Now()
 	levelDecoration := levelStrings[logLevel]
 	var msg string
-	if format != "" {
+	/*if format != "" {
 		msg = fmt.Sprintf(format, a...)
 	} else {
 		msg = fmt.Sprintln(a...)
+	}*/
+	if destination == "slack" {
+		msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data[0])
+		slack.PostMessage(l.SlackURL, msg)
 	}
-	fmt.Printf("%s: %s %s", now.Format(time.RFC3339), levelDecoration, msg)
+	if destination == "publish" {
+		msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data[0])
+		publisher.Publish(l.RabbitmqURL, l.RabbitmqQueue, msg)
+	}
+
+}
+
+func EnableLogging(cnf Conf) LoggerConfig {
+
+	return LoggerConfig{SlackURL: cnf["SlackURL"], LoggerTimeFormat: cnf["LoggerTimeFormat"],
+		RabbitmqURL: cnf["RabbitmqURL"], RabbitmqQueue: cnf["RabbitmqQueue"]}
 
 }

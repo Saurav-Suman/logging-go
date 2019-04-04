@@ -3,28 +3,26 @@ package slack
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
 
-type WebHookMessage struct {
-	Text    string `json:"text"`
-	Channel string `json:"channel,omitempty"`
+type SlackPayload struct {
+	Text interface{} `json:"text"`
 }
 
-type WebHook struct {
-	URL string
-}
+func PostMessage(url string, data ...interface{}) {
 
-func (WebHook WebHook) PostMessage(text string) {
-	log.Println("sending message to web hook URL:", WebHook.URL)
+	SlackData := SlackPayload{Text: data[0]}
+	j, err := json.Marshal(SlackData)
 
-	msg := WebHookMessage{Text: text}
-	jsonContent, _ := json.Marshal(msg)
-	resp, err := http.Post(WebHook.URL, http.DetectContentType(jsonContent), bytes.NewBuffer(jsonContent))
-
-	log.Print("web hook status: ", resp.Status)
 	if err != nil {
-		log.Panic(err)
+		fmt.Print(err)
+	}
+	resp, err := http.Post(url, http.DetectContentType(j), bytes.NewBuffer(j))
+	defer resp.Body.Close()
+	if err != nil {
+		log.Panic(err, resp.StatusCode)
 	}
 }
