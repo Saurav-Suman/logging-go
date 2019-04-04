@@ -1,8 +1,9 @@
 package publisher
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
-	"os"
 
 	"github.com/streadway/amqp"
 )
@@ -13,8 +14,8 @@ func sendThisErrorOnPriority(err error, msg string) {
 	}
 }
 
-func publisher() {
-	conn, err := amqp.Dial(os.Getenv("LOGGER_RMQ_URL"))
+func Publish(url string, queue string, data ...interface{}) {
+	conn, err := amqp.Dial(url)
 	sendThisErrorOnPriority(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -23,7 +24,7 @@ func publisher() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		os.Getenv("LOGGER_RMQ_TOPIC"), // name
+		queue, // name
 		false, // should the message be persistent? also queue will survive if the cluster gets reset
 		false, // autodelete if there's no consumers (like queues that have anonymous names, often used with fanout exchange)
 		false, // exclusive means I should get an error if any other consumer subsribes to this queue
@@ -32,7 +33,12 @@ func publisher() {
 	)
 	sendThisErrorOnPriority(err, "Failed to declare a queue")
 
-	body := "Hello World!"
+	publishData, err := json.Marshal(data[0])
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
 	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
@@ -40,7 +46,7 @@ func publisher() {
 		false,  // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(body),
+			Body:        []byte(publishData),
 		})
 	sendThisErrorOnPriority(err, "Failed to publish a message")
 }
