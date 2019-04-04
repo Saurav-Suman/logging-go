@@ -1,6 +1,3 @@
-# logging-go
-
-
 # What is `logging-go`?
 
 `logging-go` supports log levels And you can publish log to slack and rabbitMQ for now.
