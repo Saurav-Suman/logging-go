@@ -9,12 +9,33 @@ import (
 
 type Conf map[string]string
 
-type Fields map[string]interface{}
-
-type LoggerConfig struct {
+type ApiLoggerConfig struct {
 	LoggerTimeFormat string
 	RabbitmqURL      string
-	RabbitmqQueue    string
+	Queue            string
+}
+
+type SystemLoggerConfig struct {
+	LoggerTimeFormat string
+	RabbitmqURL      string
+	Queue            string
+}
+
+type ApiLoogerFields struct {
+	Ip         string
+	Url        string
+	StatusCode string
+	Request    interface{}
+	Method     string
+	Headers    interface{}
+	Response   interface{}
+	Timestamp  string
+}
+
+type SystemLoogerFields struct {
+	ErrorMsg  string
+	Module    string
+	Timestamp string
 }
 
 // Log levels
@@ -35,52 +56,44 @@ var levelStrings = map[int]string{
 	levelCrit:  "CRITICAL",
 }
 
-func Debug(l LoggerConfig, destination string, a ...interface{}) {
-	LogMe(l, destination, levelDebug, "", a...)
+func (l *SystemLoggerConfig) Debug(msg string, a ...interface{}) {
+	LogMe(levelDebug, "", a...)
 }
 
-func Debugf(l LoggerConfig, destination string, format string, a ...interface{}) {
-	LogMe(l, destination, levelDebug, format, a...)
+func (l *SystemLoggerConfig) Debugf(msg string, a ...interface{}) {
+	LogMe(levelDebug, format, a...)
 }
 
-func Info(l LoggerConfig, destination string, a ...interface{}) {
-	LogMe(l, destination, levelInfo, "", a...)
+func (l *SystemLoggerConfig) Info(msg string, a ...interface{}) {
+	LogMe(levelInfo, "", a...)
 }
 
-func Infof(l LoggerConfig, destination string, format string, a ...interface{}) {
-	LogMe(l, destination, levelInfo, format, a...)
+func (l *SystemLoggerConfig) Infof(msg string, a ...interface{}) {
+	LogMe(levelInfo, format, a...)
 }
 
-func Println(l LoggerConfig, destination string, a ...interface{}) {
-	LogMe(l, destination, levelInfo, "", a...)
+func (l *SystemLoggerConfig) Warn(msg string, a ...interface{}) {
+	LogMe(levelWarn, "", a...)
 }
 
-func Printf(l LoggerConfig, destination string, format string, a ...interface{}) {
-	LogMe(l, destination, levelInfo, format, a...)
+func (l *SystemLoggerConfig) Warnf(msg string, a ...interface{}) {
+	LogMe(levelWarn, format, a...)
 }
 
-func Warn(l LoggerConfig, destination string, a ...interface{}) {
-	LogMe(l, destination, levelWarn, "", a...)
+func (l *SystemLoggerConfig) Error(msg string, a ...interface{}) {
+	LogMe(levelErr, "", a...)
 }
 
-func Warnf(l LoggerConfig, destination string, format string, a ...interface{}) {
-	LogMe(l, destination, levelWarn, format, a...)
+func (l *SystemLoggerConfig) Errorf(msg string, a ...interface{}) {
+	LogMe(levelErr, format, a...)
 }
 
-func Error(l LoggerConfig, destination string, a ...interface{}) {
-	LogMe(l, destination, levelErr, "", a...)
+func (l *SystemLoggerConfig) Critical(msg string, a ...interface{}) {
+	LogMe(levelCrit, "", a...)
 }
 
-func Errorf(l LoggerConfig, destination string, format string, a ...interface{}) {
-	LogMe(l, destination, levelErr, format, a...)
-}
-
-func Critical(l LoggerConfig, destination string, a ...interface{}) {
-	LogMe(l, destination, levelCrit, "", a...)
-}
-
-func Criticalf(l LoggerConfig, destination string, format string, a ...interface{}) {
-	LogMe(l, destination, levelCrit, format, a...)
+func (l *SystemLoggerConfig) Criticalf(msg string, a ...interface{}) {
+	LogMe(levelCrit, format, a...)
 }
 
 /*
@@ -102,7 +115,7 @@ func Criticalf(l LoggerConfig, destination string, format string, a ...interface
 	StampNano  = "Jan _2 15:04:05.000000000"
 */
 
-func LogMe(l LoggerConfig, destination string, logLevel int, format string, data ...interface{}) {
+func LogMe(logLevel int, format string, data ...interface{}) {
 	now := time.Now()
 	levelDecoration := levelStrings[logLevel]
 	var msg string
@@ -111,10 +124,8 @@ func LogMe(l LoggerConfig, destination string, logLevel int, format string, data
 	} else {
 		msg = fmt.Sprintln(a...)
 	}*/
-	if destination == "publish" {
-		msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data[0])
-		publisher.Publish(l.RabbitmqURL, l.RabbitmqQueue, msg)
-	}
+	msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data[0])
+	publisher.Publish(l.RabbitmqURL, l.RabbitmqQueue, msg)
 
 }
 

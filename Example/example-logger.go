@@ -23,18 +23,12 @@ import (
 	StampNano  = "Jan _2 15:04:05.000000000"
 */
 
-type Message struct {
-	Name string
-	Body string
-	Time int64
-}
-
 func main() {
 
 	loggerConf := logger.EnableLogging(logger.Conf{
 		"LoggerTimeFormat": "time.RFC3339",
 		"RabbitmqURL":      "amqp://guest:guest@127.0.0.1:5672/",
-		"RabbitmqQueue":    "test",
+		"Queue":            "test",
 	})
 
 	//m := Message{"Alice", "Hello", 1294706395881547000}
@@ -45,6 +39,6 @@ func main() {
 		}
 	*/
 
-	logger.Critical(loggerConf, "publish", "Divide by zero")
+	loggerConf.Critical("Divide by zero")
 
 }
