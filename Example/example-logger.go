@@ -1,7 +1,7 @@
 package main
 
 import (
-	logger "github.com/Saurav-Suman/logging-go"
+	logger "logging-go"
 )
 
 /*
@@ -25,20 +25,29 @@ import (
 
 func main() {
 
-	loggerConf := logger.EnableLogging(logger.Conf{
-		"LoggerTimeFormat": "time.RFC3339",
-		"RabbitmqURL":      "amqp://guest:guest@127.0.0.1:5672/",
-		"Queue":            "test",
+	SystemLoggerConf := logger.SystemLoggerConfig{
+		LoggerTimeFormat: "time.RFC3339",
+		RabbitmqURL:      "amqp://guest:guest@127.0.0.1:5672/",
+		Queue:            "Error_Log",
+	}
+
+	ApiLoggerConf := logger.ApiLoggerConfig{
+		LoggerTimeFormat: "time.RFC3339",
+		RabbitmqURL:      "amqp://guest:guest@127.0.0.1:5672/",
+		Queue:            "Api_Logs",
+	}
+
+	SystemLoggerConf.Critical("Divide by zero")
+	SystemLoggerConf.Criticalf("Divide by zero %s", "sdsd")
+
+	ApiLoggerConf.LogToRmq(logger.ApiLoggerFields{Ip: "192.168.0.1",
+		Url:        "getRechargeData",
+		StatusCode: 200,
+		Request:    "sdsdsd",
+		Method:     "POST",
+		Headers:    "sdsdsdsd",
+		Response:   "sdsdsd",
+		Timestamp:  "",
 	})
-
-	//m := Message{"Alice", "Hello", 1294706395881547000}
-	/*
-		 logger.Fields{
-			"animal": "walrus",
-			"size":   10,
-		}
-	*/
-
-	loggerConf.Critical("Divide by zero")
 
 }
