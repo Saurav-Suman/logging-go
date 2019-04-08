@@ -1,7 +1,7 @@
 package main
 
 import (
-	"logging-go"
+	logger "github.com/Saurav-Suman/logging-go"
 )
 
 /*
@@ -32,7 +32,6 @@ type Message struct {
 func main() {
 
 	loggerConf := logger.EnableLogging(logger.Conf{
-		"SlackURL":         "https://hooks.slack.com/services/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",
 		"LoggerTimeFormat": "time.RFC3339",
 		"RabbitmqURL":      "amqp://guest:guest@127.0.0.1:5672/",
 		"RabbitmqQueue":    "test",
@@ -45,7 +44,6 @@ func main() {
 			"size":   10,
 		}
 	*/
-	logger.Critical(loggerConf, "slack", "Divide by zero")
 
 	logger.Critical(loggerConf, "publish", "Divide by zero")
 

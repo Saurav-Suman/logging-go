@@ -3,6 +3,17 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:43a9cbc514b5b1edaf682bf1450e48f5f875917602fe1ac2a2000808c77bf80b"
+  name = "github.com/Saurav-Suman/logging-go"
+  packages = [
+    ".",
+    "Publisher",
+  ]
+  pruneopts = "UT"
+  revision = "071eee91e2b7c5e9b52400f9152d518fb1e06cf5"
+
+[[projects]]
+  branch = "master"
   digest = "1:d6bb6f3240a488ffe5bb6952b513569d009927dcb20ff94885f87b76cef2b698"
   name = "github.com/streadway/amqp"
   packages = ["."]
@@ -12,6 +23,10 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/streadway/amqp"]
+  input-imports = [
+    "github.com/Saurav-Suman/logging-go",
+    "github.com/Saurav-Suman/logging-go/Publisher",
+    "github.com/streadway/amqp",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -2,9 +2,9 @@ package logger
 
 import (
 	"fmt"
-	publisher "logging-go/Publisher"
-	slack "logging-go/Slack"
 	"time"
+
+	publisher "github.com/Saurav-Suman/logging-go/Publisher"
 )
 
 type Conf map[string]string
@@ -12,7 +12,6 @@ type Conf map[string]string
 type Fields map[string]interface{}
 
 type LoggerConfig struct {
-	SlackURL         string
 	LoggerTimeFormat string
 	RabbitmqURL      string
 	RabbitmqQueue    string
@@ -112,10 +111,6 @@ func LogMe(l LoggerConfig, destination string, logLevel int, format string, data
 	} else {
 		msg = fmt.Sprintln(a...)
 	}*/
-	if destination == "slack" {
-		msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data[0])
-		slack.PostMessage(l.SlackURL, msg)
-	}
 	if destination == "publish" {
 		msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data[0])
 		publisher.Publish(l.RabbitmqURL, l.RabbitmqQueue, msg)
@@ -125,7 +120,7 @@ func LogMe(l LoggerConfig, destination string, logLevel int, format string, data
 
 func EnableLogging(cnf Conf) LoggerConfig {
 
-	return LoggerConfig{SlackURL: cnf["SlackURL"], LoggerTimeFormat: cnf["LoggerTimeFormat"],
+	return LoggerConfig{LoggerTimeFormat: cnf["LoggerTimeFormat"],
 		RabbitmqURL: cnf["RabbitmqURL"], RabbitmqQueue: cnf["RabbitmqQueue"]}
 
 }

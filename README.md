@@ -1,6 +1,6 @@
 # What is `logging-go`?
 
-`logging-go` supports log levels And you can publish log to slack and rabbitMQ for now.
+`logging-go` supports log levels And you can publish log to rabbitMQ for now.
 
 # _Another_ logging library, Why?
 
@@ -9,7 +9,6 @@
 
 ## And how is `logging-go` different?
 
-- Slack Integration
 - RabbitMQ Integration
 
 
@@ -18,18 +17,20 @@
 
 
 
-Log to Slack or Publish to RabbitMQ using a logging-go instantiated like so:
+Publish to RabbitMQ using a logging-go instantiated like so:
 
 ```golang
 
+import (
+	logger "github.com/Saurav-Suman/logging-go"
+)
+
 loggerConf := logger.EnableLogging(logger.Conf{
-		"SlackURL":         "Slack Webhook URL",
 		"LoggerTimeFormat": "time.RFC3339",
 		"RabbitmqURL":      "amqp://RabbitMQURL/",
 		"RabbitmqQueue":    "test",
 	})
   
-logger.Critical(loggerConf, "slack", "Divide by zero")
 logger.Critical(loggerConf, "publish", "Divide by zero")
 ```
 
