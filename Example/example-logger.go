@@ -46,6 +46,8 @@ func main() {
 	// }
 
 	log.Critical("Divide by zero")
+	log.Info("sdsdsd")
+	log.Infof("error at line %d and error is ", 45, "faltu error ")
 	log.Criticalf("Divide by zero %s", "sdsd")
 
 	log.Api(logger.ApiLoggerFields{Ip: "192.168.0.1",

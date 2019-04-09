@@ -133,7 +133,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data string) 
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
-	queueToSend.WriteString("-")
+	queueToSend.WriteString(".")
 	queueToSend.WriteString(queueName)
 	publisher.Publish(s.RabbitmqURL, queueToSend.String(), msg)
 
@@ -143,7 +143,7 @@ func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
-	queueToSend.WriteString("-")
+	queueToSend.WriteString(".")
 	queueToSend.WriteString(s.QueueNames.Api)
 	publisher.Publish(s.RabbitmqURL, queueToSend.String(), data)
 
