@@ -25,25 +25,33 @@ import (
 
 func main() {
 
-	SystemLoggerConf := logger.SystemLoggerConfig{
+	log := logger.SystemLoggerConfig{
 		LoggerTimeFormat: "time.RFC3339",
 		RabbitmqURL:      "amqp://guest:guest@127.0.0.1:5672/",
-		Queue:            "Error_Log",
+		QueuePrefix:      "ayopop",
+		QueueNames: logger.QueueCategory{
+			Api:      "api",
+			Debug:    "debug",
+			Info:     "info",
+			Warn:     "warning",
+			Error:    "error",
+			Critical: "critical",
+		},
 	}
 
-	ApiLoggerConf := logger.ApiLoggerConfig{
-		LoggerTimeFormat: "time.RFC3339",
-		RabbitmqURL:      "amqp://guest:guest@127.0.0.1:5672/",
-		Queue:            "Api_Logs",
-	}
+	// ApiLoggerConf := logger.ApiLoggerConfig{
+	// 	LoggerTimeFormat: "time.RFC3339",
+	// 	RabbitmqURL:      "amqp://guest:guest@127.0.0.1:5672/",
+	// 	Queue:            "Api_Logs",
+	// }
 
-	SystemLoggerConf.Critical("Divide by zero")
-	SystemLoggerConf.Criticalf("Divide by zero %s", "sdsd")
+	log.Critical("Divide by zero")
+	log.Criticalf("Divide by zero %s", "sdsd")
 
-	ApiLoggerConf.LogToRmq(logger.ApiLoggerFields{Ip: "192.168.0.1",
+	log.Api(logger.ApiLoggerFields{Ip: "192.168.0.1",
 		Url:        "getRechargeData",
 		StatusCode: 200,
-		Request:    "sdsdsd",
+		Request:    "dd",
 		Method:     "POST",
 		Headers:    "sdsdsdsd",
 		Response:   "sdsdsd",
