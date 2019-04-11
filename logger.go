@@ -127,9 +127,9 @@ func (l *SystemLoggerConfig) Criticalf(msg string, a ...interface{}) {
 
 func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data string) {
 	now := time.Now()
-	levelDecoration := levelStrings[logLevel]
+	//levelDecoration := levelStrings[logLevel]
 	var msg string
-	msg = fmt.Sprintf("%s: %s %s", now.Format(time.Stamp), levelDecoration, data)
+	msg = fmt.Sprintf("%s: %s", now.Format(time.Stamp), data)
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
