@@ -31,7 +31,7 @@ func main() {
 		},
 	}
 
-	log.Critical(logger.SystemLoogerFields{Message: "Divide By Zero",
+	log.Critical(logger.SystemLoogerFields{Source: "DoRecharge", Message: "Divide By Zero",
 		Request:  string(jsonString),
 		Response: string(jsonString),
 	})

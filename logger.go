@@ -36,6 +36,7 @@ type SystemLoggerConfig struct {
 }
 
 type SystemLoogerFields struct {
+	Source    string
 	Message   string
 	Request   interface{}
 	Response  interface{}
