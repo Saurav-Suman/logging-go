@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -31,15 +30,15 @@ type ApiLoggerFields struct {
 }
 
 type SystemLoggerConfig struct {
-	LoggerTimeFormat string
-	RabbitmqURL      string
-	QueuePrefix      string
-	QueueNames       QueueCategory
+	RabbitmqURL string
+	QueuePrefix string
+	QueueNames  QueueCategory
 }
 
 type SystemLoogerFields struct {
-	ErrorMsg  string
-	Module    string
+	Message   string
+	Request   interface{}
+	Response  interface{}
 	Timestamp string
 }
 
@@ -61,48 +60,23 @@ var levelStrings = map[int]string{
 	levelCrit:  "CRITICAL",
 }
 
-func (l *SystemLoggerConfig) Debug(msg string) {
+func (l *SystemLoggerConfig) Debug(msg SystemLoogerFields) {
 	l.LogMe(levelDebug, l.QueueNames.Debug, msg)
 }
 
-func (l *SystemLoggerConfig) Debugf(msg string, a ...interface{}) {
-	msg = fmt.Sprintf(msg, a...)
-	l.LogMe(levelDebug, l.QueueNames.Debug, msg)
-}
-
-func (l *SystemLoggerConfig) Info(msg string) {
+func (l *SystemLoggerConfig) Info(msg SystemLoogerFields) {
 	l.LogMe(levelInfo, l.QueueNames.Info, msg)
 }
 
-func (l *SystemLoggerConfig) Infof(msg string, a ...interface{}) {
-	msg = fmt.Sprintf(msg, a...)
-	l.LogMe(levelInfo, l.QueueNames.Info, msg)
-}
-
-func (l *SystemLoggerConfig) Warn(msg string) {
+func (l *SystemLoggerConfig) Warn(msg SystemLoogerFields) {
 	l.LogMe(levelWarn, l.QueueNames.Warn, msg)
 }
 
-func (l *SystemLoggerConfig) Warnf(msg string, a ...interface{}) {
-	msg = fmt.Sprintf(msg, a...)
-	l.LogMe(levelWarn, l.QueueNames.Warn, msg)
-}
-
-func (l *SystemLoggerConfig) Error(msg string) {
+func (l *SystemLoggerConfig) Error(msg SystemLoogerFields) {
 	l.LogMe(levelErr, l.QueueNames.Error, msg)
 }
 
-func (l *SystemLoggerConfig) Errorf(msg string, a ...interface{}) {
-	msg = fmt.Sprintf(msg, a...)
-	l.LogMe(levelErr, l.QueueNames.Error, msg)
-}
-
-func (l *SystemLoggerConfig) Critical(msg string) {
-	l.LogMe(levelCrit, l.QueueNames.Critical, msg)
-}
-
-func (l *SystemLoggerConfig) Criticalf(msg string, a ...interface{}) {
-	msg = fmt.Sprintf(msg, a...)
+func (l *SystemLoggerConfig) Critical(msg SystemLoogerFields) {
 	l.LogMe(levelCrit, l.QueueNames.Critical, msg)
 }
 
@@ -125,23 +99,22 @@ func (l *SystemLoggerConfig) Criticalf(msg string, a ...interface{}) {
 	StampNano  = "Jan _2 15:04:05.000000000"
 */
 
-func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data string) {
-	now := time.Now()
-	//levelDecoration := levelStrings[logLevel]
-	var msg string
-	msg = fmt.Sprintf("%s: %s", now.Format(time.Stamp), data)
+func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLoogerFields) {
+	currentTime := time.Now()
+	data.Timestamp = currentTime.Format("2006.01.02 15:04:05")
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(queueName)
-	publisher.Publish(s.RabbitmqURL, queueToSend.String(), msg)
+	publisher.Publish(s.RabbitmqURL, queueToSend.String(), data)
 
 }
 
 func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 	var queueToSend strings.Builder
-
+	currentTime := time.Now()
+	data.Timestamp = currentTime.Format("2006.01.02 15:04:05")
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(s.QueueNames.Api)
