@@ -8,20 +8,25 @@ import (
 	"github.com/streadway/amqp"
 )
 
+var ch *amqp.Channel
+
 func sendThisErrorOnPriority(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
-func Publish(url string, exchange string, queue string, data ...interface{}) {
+func InitRMQ(url string) {
 	conn, err := amqp.Dial(url)
 	sendThisErrorOnPriority(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
+	//defer conn.Close()
 
-	ch, err := conn.Channel()
+	ch, err = conn.Channel()
 	sendThisErrorOnPriority(err, "Failed to open a channel")
-	defer ch.Close()
+	//defer ch.Close()
+}
+
+func Publish(exchange string, queue string, data ...interface{}) {
 
 	/*q, err := ch.QueueDeclare(
 		queue, // name
@@ -31,7 +36,6 @@ func Publish(url string, exchange string, queue string, data ...interface{}) {
 		false, // no-wait means I don't want RabbitMQ to wait if there's a queue successfully setup
 		nil,   // arguments for more advanced configuration
 	)*/
-	sendThisErrorOnPriority(err, "Failed to declare a queue")
 
 	publishData, err := json.Marshal(data[0])
 

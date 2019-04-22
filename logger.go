@@ -7,6 +7,7 @@ import (
 	publisher "github.com/Saurav-Suman/logging-go/Publisher"
 )
 
+//github.com/Saurav-Suman/
 type Conf map[string]string
 
 type QueueCategory struct {
@@ -100,6 +101,10 @@ func (l *SystemLoggerConfig) Critical(msg SystemLoogerFields) {
 	StampNano  = "Jan _2 15:04:05.000000000"
 */
 
+func (s *SystemLoggerConfig) InitLogging() {
+	publisher.InitRMQ(s.RabbitmqURL)
+}
+
 func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLoogerFields) {
 	currentTime := time.Now()
 	data.Timestamp = currentTime.Format("2006.01.02 15:04:05")
@@ -108,7 +113,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLo
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(queueName)
-	publisher.Publish(s.RabbitmqURL, s.QueuePrefix, queueName, data)
+	publisher.Publish(s.QueuePrefix, queueName, data)
 
 }
 
@@ -119,6 +124,6 @@ func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(s.QueueNames.Api)
-	publisher.Publish(s.RabbitmqURL, s.QueuePrefix, s.QueueNames.Api, data)
+	publisher.Publish(s.QueuePrefix, s.QueueNames.Api, data)
 
 }

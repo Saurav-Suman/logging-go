@@ -31,6 +31,8 @@ func main() {
 		},
 	}
 
+	log.InitLogging()
+
 	log.Critical(logger.SystemLoogerFields{Source: "DoRecharge", Message: "Divide By Zero",
 		Request:  string(jsonString),
 		Response: string(jsonString),
