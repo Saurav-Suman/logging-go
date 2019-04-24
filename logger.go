@@ -1,10 +1,12 @@
 package logger
 
 import (
+	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
-	publisher "github.com/Saurav-Suman/logging-go/Publisher"
+	publisher "logging-go/Publisher"
 )
 
 //github.com/Saurav-Suman/
@@ -31,6 +33,7 @@ type ApiLoggerFields struct {
 }
 
 type SystemLoggerConfig struct {
+	Console     bool
 	RabbitmqURL string
 	QueuePrefix string
 	QueueNames  QueueCategory
@@ -113,7 +116,16 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLo
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(queueName)
-	publisher.Publish(s.QueuePrefix, queueName, data)
+	if !s.Console {
+		publisher.Publish(s.QueuePrefix, queueName, data)
+	} else {
+		publishData, err := json.Marshal(data)
+
+		if err != nil {
+			fmt.Print(err)
+		}
+		fmt.Println(string(publishData))
+	}
 
 }
 
@@ -124,6 +136,15 @@ func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(s.QueueNames.Api)
-	publisher.Publish(s.QueuePrefix, s.QueueNames.Api, data)
+	if !s.Console {
+		publisher.Publish(s.QueuePrefix, s.QueueNames.Api, data)
+	} else {
+		publishData, err := json.Marshal(data)
+
+		if err != nil {
+			fmt.Print(err)
+		}
+		fmt.Println(string(publishData))
+	}
 
 }

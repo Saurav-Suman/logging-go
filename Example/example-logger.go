@@ -19,6 +19,7 @@ func main() {
 	jsonString, _ := json.Marshal(dummydatatosend)
 
 	log := logger.SystemLoggerConfig{
+		Console:     true,
 		RabbitmqURL: "amqp://guest:guest@127.0.0.1:5672/",
 		QueuePrefix: "ayopop",
 		QueueNames: logger.QueueCategory{
