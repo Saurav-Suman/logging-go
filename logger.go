@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	publisher "logging-go/Publisher"
+	publisher "github.com/Saurav-Suman/logging-go/Publisher"
 )
 
 //github.com/Saurav-Suman/
