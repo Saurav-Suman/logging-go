@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	logger "logging-go"
 )
 
@@ -16,7 +15,7 @@ func main() {
 		},
 	}
 
-	jsonString, _ := json.Marshal(dummydatatosend)
+	//jsonString, _ := json.Marshal(dummydatatosend)
 
 	log := logger.SystemLoggerConfig{
 		Console:     true,
@@ -35,17 +34,8 @@ func main() {
 	log.InitLogging()
 
 	log.Critical(logger.SystemLoogerFields{Source: "DoRecharge", Message: "Divide By Zero",
-		Request:  string(jsonString),
-		Response: string(jsonString),
-	})
-
-	log.Api(logger.ApiLoggerFields{Ip: "192.168.0.1",
-		Url:        "getRechargeData",
-		StatusCode: 200,
-		Request:    string(jsonString),
-		Method:     "POST",
-		Headers:    "sdsdsdsd",
-		Response:   string(jsonString),
+		Request:  dummydatatosend,
+		Response: dummydatatosend,
 	})
 
 }

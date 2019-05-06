@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	publisher "github.com/Saurav-Suman/logging-go/Publisher"
+	publisher "logging-go/Publisher"
 )
 
 //github.com/Saurav-Suman/
@@ -109,8 +109,8 @@ func (s *SystemLoggerConfig) InitLogging() {
 }
 
 func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLoogerFields) {
-	currentTime := time.Now()
-	data.Timestamp = currentTime.Format("2006.01.02 15:04:05")
+	//currentTime := time.Now()
+	data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
@@ -131,8 +131,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLo
 
 func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 	var queueToSend strings.Builder
-	currentTime := time.Now()
-	data.Timestamp = currentTime.Format("2006.01.02 15:04:05")
+	data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(s.QueueNames.Api)
