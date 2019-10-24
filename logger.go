@@ -40,7 +40,9 @@ type SystemLoggerConfig struct {
 }
 
 type SystemLoogerFields struct {
-	Message string
+	Source    string
+	Message   string
+	Timestamp string
 }
 
 // Log levels
