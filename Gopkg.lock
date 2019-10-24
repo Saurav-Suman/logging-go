@@ -3,12 +3,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:43a9cbc514b5b1edaf682bf1450e48f5f875917602fe1ac2a2000808c77bf80b"
+  digest = "1:8f4967f1e34fb23aa86adeece65d79ae32c478ee765982e4d656b9d8a37b0181"
   name = "github.com/Saurav-Suman/logging-go"
-  packages = [
-    ".",
-    "Publisher",
-  ]
+  packages = ["Publisher"]
   pruneopts = "UT"
   revision = "071eee91e2b7c5e9b52400f9152d518fb1e06cf5"
 
@@ -24,7 +21,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/Saurav-Suman/logging-go",
     "github.com/Saurav-Suman/logging-go/Publisher",
     "github.com/streadway/amqp",
   ]

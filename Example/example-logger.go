@@ -33,9 +33,6 @@ func main() {
 
 	log.InitLogging()
 
-	log.Critical(logger.SystemLoogerFields{Source: "DoRecharge", Message: "Divide By Zero",
-		Request:  dummydatatosend,
-		Response: dummydatatosend,
-	})
+	log.Critical(logger.SystemLoogerFields{Message: "Divide By Zero"})
 
 }
