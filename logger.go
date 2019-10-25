@@ -3,10 +3,11 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	publisher "logging-go/Publisher"
+	"os"
 	"strings"
 	"time"
-
-	publisher "github.com/Saurav-Suman/logging-go/Publisher"
 )
 
 //github.com/Saurav-Suman/
@@ -63,23 +64,23 @@ var levelStrings = map[int]string{
 	levelCrit:  "CRITICAL",
 }
 
-func (l *SystemLoggerConfig) Debug(msg SystemLoogerFields) {
+func (l *SystemLoggerConfig) Debug(msg string) {
 	l.LogMe(levelDebug, l.QueueNames.Debug, msg)
 }
 
-func (l *SystemLoggerConfig) Info(msg SystemLoogerFields) {
+func (l *SystemLoggerConfig) Info(msg string) {
 	l.LogMe(levelInfo, l.QueueNames.Info, msg)
 }
 
-func (l *SystemLoggerConfig) Warn(msg SystemLoogerFields) {
+func (l *SystemLoggerConfig) Warn(msg string) {
 	l.LogMe(levelWarn, l.QueueNames.Warn, msg)
 }
 
-func (l *SystemLoggerConfig) Error(msg SystemLoogerFields) {
+func (l *SystemLoggerConfig) Error(msg string) {
 	l.LogMe(levelErr, l.QueueNames.Error, msg)
 }
 
-func (l *SystemLoggerConfig) Critical(msg SystemLoogerFields) {
+func (l *SystemLoggerConfig) Critical(msg string) {
 	l.LogMe(levelCrit, l.QueueNames.Critical, msg)
 }
 
@@ -106,9 +107,19 @@ func (s *SystemLoggerConfig) InitLogging() {
 	publisher.InitRMQ(s.RabbitmqURL)
 }
 
-func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLoogerFields) {
+func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg string) {
+
+	if os.Getenv("app") == "" {
+		log.Fatalf("%s", "Environment variable `app` missing in env file")
+	}
+
+	data := SystemLoogerFields{
+		Source:    os.Getenv("app"),
+		Message:   msg,
+		Timestamp: time.Now().Format(time.RFC3339), //currentTime.Format("2006.01.02 15:04:05")
+	}
+
 	//currentTime := time.Now()
-	data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
@@ -122,7 +133,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLo
 		if err != nil {
 			fmt.Print(err)
 		}
-		fmt.Println(string(publishData))
+		fmt.Println("Published data ", string(publishData))
 	}
 
 }
