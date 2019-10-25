@@ -3,9 +3,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:26c28129b46fc6ae725f2d8b638c6341e956d3c38600fc12a56a1914a58e0457"
+  digest = "1:bbdd681cfc8eaca4b8fff728d812e4497efc28faa12c5909dd404817d28ca82c"
   name = "github.com/Saurav-Suman/logging-go"
-  packages = ["."]
+  packages = ["Publisher"]
   pruneopts = "UT"
   revision = "b402408e059ea27cc0629e1d69c658a6e779faa9"
 
@@ -21,7 +21,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/Saurav-Suman/logging-go",
+    "github.com/Saurav-Suman/logging-go/Publisher",
     "github.com/streadway/amqp",
   ]
   solver-name = "gps-cdcl"

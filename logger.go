@@ -3,8 +3,8 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
+	publisher "github.com/Saurav-Suman/logging-go/Publisher"
 	"log"
-	publisher "logging-go/Publisher"
 	"os"
 	"strings"
 	"time"
