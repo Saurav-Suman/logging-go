@@ -4,15 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	publisher "github.com/Saurav-Suman/logging-go/Publisher"
+	"io"
 	"log"
 	"os"
 	"strings"
-	"time"
 )
 
-//github.com/Saurav-Suman/
 type Conf map[string]string
-
 type QueueCategory struct {
 	Api      string
 	Debug    string
@@ -20,30 +18,24 @@ type QueueCategory struct {
 	Warn     string
 	Error    string
 	Critical string
+	IO       string
 }
 
-type ApiLoggerFields struct {
-	Ip         string
-	Url        string
-	StatusCode int
-	Request    interface{}
-	Method     string
-	Headers    interface{}
-	Response   interface{}
-	Timestamp  string
-}
-
+//type ApiLoggerFields struct {
+//	Ip         string
+//	Url        string
+//	StatusCode int
+//	Request    interface{}
+//	Method     string
+//	Headers    interface{}
+//	Response   interface{}
+//	Timestamp  string
+//}
 type SystemLoggerConfig struct {
 	Console     bool
 	RabbitmqURL string
 	QueuePrefix string
 	QueueNames  QueueCategory
-}
-
-type SystemLoogerFields struct {
-	Source    string
-	Message   string
-	Timestamp string
 }
 
 // Log levels
@@ -53,6 +45,7 @@ const (
 	levelWarn
 	levelInfo
 	levelDebug
+	levelIO
 )
 
 // Map
@@ -62,6 +55,31 @@ var levelStrings = map[int]string{
 	levelWarn:  "WARN",
 	levelErr:   "ERROR",
 	levelCrit:  "CRITICAL",
+	levelIO:    "IO",
+}
+
+//type SystemLoogerFields struct {
+//	Source    string
+//	Message   interface{}
+//	Timestamp string
+//}
+
+func ConvertDataToString(w io.Writer, input ...interface{}) (n []interface{}, err error) {
+	for _, arg := range input {
+		jsonString, _ := json.Marshal(arg)
+		fmt.Print(string(jsonString), "-")
+	}
+	return
+}
+
+func FeedDataForConversion(a ...interface{}) (n []interface{}, err error) {
+	return ConvertDataToString(os.Stdout, a...)
+}
+
+func getStringifiedResponse(data ...interface{}) {
+
+	output, _ := FeedDataForConversion(data)
+	fmt.Println(output)
 }
 
 func (l *SystemLoggerConfig) Debug(msg string) {
@@ -82,6 +100,10 @@ func (l *SystemLoggerConfig) Error(msg string) {
 
 func (l *SystemLoggerConfig) Critical(msg string) {
 	l.LogMe(levelCrit, l.QueueNames.Critical, msg)
+}
+
+func (l *SystemLoggerConfig) IO(msg ...interface{}) {
+	l.LogConsole(levelIO, l.QueueNames.IO, msg)
 }
 
 /*
@@ -107,17 +129,17 @@ func (s *SystemLoggerConfig) InitLogging() {
 	publisher.InitRMQ(s.RabbitmqURL)
 }
 
-func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg string) {
+func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg interface{}) {
 
 	if os.Getenv("app") == "" {
 		log.Fatalf("%s", "Environment variable `app` missing in env file")
 	}
 
-	data := SystemLoogerFields{
-		Source:    os.Getenv("app"),
-		Message:   msg,
-		Timestamp: time.Now().Format(time.RFC3339), //currentTime.Format("2006.01.02 15:04:05")
-	}
+	//data := SystemLoogerFields{
+	//	Source:    os.Getenv("app"),
+	//	Message:   msg,
+	//	Timestamp: time.Now().Format(time.RFC3339), //currentTime.Format("2006.01.02 15:04:05")
+	//}
 
 	//currentTime := time.Now()
 	var queueToSend strings.Builder
@@ -126,21 +148,37 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg string) {
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(queueName)
 	if !s.Console {
-		publisher.Publish(s.QueuePrefix, queueName, data)
+		publisher.Publish(s.QueuePrefix, queueName, msg)
 	} else {
-		publishData, err := json.Marshal(data)
 
-		if err != nil {
-			fmt.Print(err)
-		}
-		fmt.Println("Published data ", string(publishData))
+		publisher.Publish(s.QueuePrefix, queueName, msg)
 	}
-
+	return
 }
 
-func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
+func (s *SystemLoggerConfig) LogConsole(logLevel int, queueName string, msg ...interface{}) {
+
+	if os.Getenv("app") == "" {
+		log.Fatalf("%s", "Environment variable `app` missing in env file")
+	}
+
 	var queueToSend strings.Builder
-	data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
+
+	queueToSend.WriteString(s.QueuePrefix)
+	queueToSend.WriteString(".")
+	queueToSend.WriteString(queueName)
+
+	var data = getStringifiedResponse(msg)
+
+	if s.Console {
+		publisher.Publish(s.QueuePrefix, queueName, data)
+	}
+	return
+}
+
+func (s *SystemLoggerConfig) Api(data interface{}) {
+	var queueToSend strings.Builder
+	//data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
 	queueToSend.WriteString(s.QueuePrefix)
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(s.QueueNames.Api)
@@ -153,6 +191,8 @@ func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 			fmt.Print(err)
 		}
 		fmt.Println(string(publishData))
+		publisher.Publish(s.QueuePrefix, s.QueueNames.Api, data)
+
 	}
 
 }
