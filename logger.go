@@ -3,11 +3,10 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
-	publisher "github.com/Saurav-Suman/logging-go/Publisher"
-	"log"
-	"os"
 	"strings"
 	"time"
+
+	publisher "github.com/Saurav-Suman/logging-go/Publisher"
 )
 
 //github.com/Saurav-Suman/
@@ -43,6 +42,8 @@ type SystemLoggerConfig struct {
 type SystemLoogerFields struct {
 	Source    string
 	Message   string
+	Request   interface{}
+	Response  interface{}
 	Timestamp string
 }
 
@@ -64,23 +65,23 @@ var levelStrings = map[int]string{
 	levelCrit:  "CRITICAL",
 }
 
-func (l *SystemLoggerConfig) Debug(msg string) {
+func (l *SystemLoggerConfig) Debug(msg SystemLoogerFields) {
 	l.LogMe(levelDebug, l.QueueNames.Debug, msg)
 }
 
-func (l *SystemLoggerConfig) Info(msg string) {
+func (l *SystemLoggerConfig) Info(msg SystemLoogerFields) {
 	l.LogMe(levelInfo, l.QueueNames.Info, msg)
 }
 
-func (l *SystemLoggerConfig) Warn(msg string) {
+func (l *SystemLoggerConfig) Warn(msg SystemLoogerFields) {
 	l.LogMe(levelWarn, l.QueueNames.Warn, msg)
 }
 
-func (l *SystemLoggerConfig) Error(msg string) {
+func (l *SystemLoggerConfig) Error(msg SystemLoogerFields) {
 	l.LogMe(levelErr, l.QueueNames.Error, msg)
 }
 
-func (l *SystemLoggerConfig) Critical(msg string) {
+func (l *SystemLoggerConfig) Critical(msg SystemLoogerFields) {
 	l.LogMe(levelCrit, l.QueueNames.Critical, msg)
 }
 
@@ -107,19 +108,9 @@ func (s *SystemLoggerConfig) InitLogging() {
 	publisher.InitRMQ(s.RabbitmqURL)
 }
 
-func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg string) {
-
-	if os.Getenv("app") == "" {
-		log.Fatalf("%s", "Environment variable `app` missing in env file")
-	}
-
-	data := SystemLoogerFields{
-		Source:    os.Getenv("app"),
-		Message:   msg,
-		Timestamp: time.Now().Format(time.RFC3339), //currentTime.Format("2006.01.02 15:04:05")
-	}
-
+func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, data SystemLoogerFields) {
 	//currentTime := time.Now()
+	data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
 	var queueToSend strings.Builder
 
 	queueToSend.WriteString(s.QueuePrefix)
@@ -133,7 +124,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg string) {
 		if err != nil {
 			fmt.Print(err)
 		}
-		fmt.Println("Published data ", string(publishData))
+		fmt.Println(string(publishData))
 	}
 
 }

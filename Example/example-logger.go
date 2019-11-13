@@ -6,14 +6,14 @@ import (
 
 func main() {
 
-	//dummydatatosend := map[string]interface{}{
-	//	"Name": "Ayopop",
-	//	"Age":  3,
-	//	"Parents": []interface{}{
-	//		"Chiragh",
-	//		"Jakob",
-	//	},
-	//}
+	dummydatatosend := map[string]interface{}{
+		"Name": "Ayopop",
+		"Age":  3,
+		"Parents": []interface{}{
+			"Chiragh",
+			"Jakob",
+		},
+	}
 
 	//jsonString, _ := json.Marshal(dummydatatosend)
 
@@ -33,9 +33,9 @@ func main() {
 
 	log.InitLogging()
 
-	log.Critical("asdasd")
-	log.Info("Hello")
-
-	//log.Critical(logger.SystemLoogerFields{Message: "Divide By Zero"})
+	log.Critical(logger.SystemLoogerFields{Source: "DoRecharge", Message: "Divide By Zero",
+		Request:  dummydatatosend,
+		Response: dummydatatosend,
+	})
 
 }
