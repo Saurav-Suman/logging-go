@@ -64,22 +64,17 @@ var levelStrings = map[int]string{
 //	Timestamp string
 //}
 
-func ConvertDataToString(w io.Writer, input ...interface{}) (n []interface{}, err error) {
+func ConvertDataToString(w io.Writer, input ...interface{}) string {
+	convertedString := ""
 	for _, arg := range input {
 		jsonString, _ := json.Marshal(arg)
-		fmt.Print(string(jsonString), "-")
+		convertedString += string(jsonString)
 	}
-	return
+	return convertedString
 }
 
-func FeedDataForConversion(a ...interface{}) (n []interface{}, err error) {
+func FeedDataForConversion(a ...interface{}) string {
 	return ConvertDataToString(os.Stdout, a...)
-}
-
-func getStringifiedResponse(data ...interface{}) {
-
-	output, _ := FeedDataForConversion(data)
-	fmt.Println(output)
 }
 
 func (l *SystemLoggerConfig) Debug(msg string) {
@@ -168,7 +163,7 @@ func (s *SystemLoggerConfig) LogConsole(logLevel int, queueName string, msg ...i
 	queueToSend.WriteString(".")
 	queueToSend.WriteString(queueName)
 
-	var data = getStringifiedResponse(msg)
+	var data = FeedDataForConversion(msg)
 
 	if s.Console {
 		publisher.Publish(s.QueuePrefix, queueName, data)
