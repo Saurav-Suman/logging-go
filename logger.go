@@ -177,7 +177,7 @@ func (s *SystemLoggerConfig) LogConsole(logLevel int, queueName string, msg ...i
 	return
 }
 
-func (s *SystemLoggerConfig) Api(data interface{}) {
+func (s *SystemLoggerConfig) Api(data ApiLoggerFields) {
 	var queueToSend strings.Builder
 	//data.Timestamp = time.Now().Format(time.RFC3339) //currentTime.Format("2006.01.02 15:04:05")
 	queueToSend.WriteString(s.QueuePrefix)
