@@ -97,3 +97,8 @@ func main() {
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create a new Pull Request
 
+
+# Note:
+
+1. For using multiple parameters using custom inputs for logging; PLEASE REFER release version = 1.1
+2. For using predefined (SystemLoogerData) parameters for logging; PLEASE REFER release version = 1.0
