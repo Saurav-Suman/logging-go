@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	publisher "github.com/Saurav-Suman/logging-go/Publisher"
-	"io"
 	"log"
 	"os"
 	"strings"
@@ -65,7 +64,7 @@ type SystemLoogerFields struct {
 	Timestamp string
 }
 
-func ConvertDataToString(w io.Writer, input ...interface{}) string {
+func ConvertDataToString(input ...interface{}) string {
 	convertedString := ""
 	for _, arg := range input {
 		jsonString, _ := json.Marshal(arg)
@@ -75,7 +74,7 @@ func ConvertDataToString(w io.Writer, input ...interface{}) string {
 }
 
 func FeedDataForConversion(a ...interface{}) string {
-	return ConvertDataToString(os.Stdout, a...)
+	return ConvertDataToString(a...)
 }
 
 func (l *SystemLoggerConfig) Debug(msg ...interface{}) {
@@ -132,6 +131,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg ...interf
 	}
 
 	var msgData = FeedDataForConversion(msg)
+	fmt.Println("Converted message: ", msgData)
 	data := SystemLoogerFields{
 		Source:    os.Getenv("app"),
 		Message:   msgData,
@@ -159,6 +159,7 @@ func (s *SystemLoggerConfig) LogConsole(logLevel int, queueName string, msg ...i
 	}
 
 	var msgData = FeedDataForConversion(msg)
+	fmt.Println("Converted message: ", msgData)
 	data := SystemLoogerFields{
 		Source:    os.Getenv("app"),
 		Message:   msgData,
