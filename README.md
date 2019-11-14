@@ -5,7 +5,7 @@
 # _Another_ logging library, Why?
 
 > Logging libraries are like opinions, everyone needs one depends upon the need.
-
+> You can add multiple parameters to the message for log, critical, info, debug, warn which will be transformed to a single string.
 
 ## And how is `logging-go` different?
 
@@ -50,6 +50,12 @@ import (
 	StampNano  = "Jan _2 15:04:05.000000000"
 */
 
+type CustomResponse struct {
+	Success       bool
+	StatusCode    int
+	Message       string
+}
+
 func main() {
 
 	log := logger.SystemLoggerConfig{
@@ -66,12 +72,20 @@ func main() {
 		},
 	}
 
-	
+	// You can create your custom request
+    var response types.CustomResponse
+    response.Success = true
+    response.StatusCode = 200
+    response.Message = "OK."
 
-	log.Critical("Divide by zero")
-	log.Info("Runming")
-	log.Infof("error at line %d and error is ", 45, "fatal error ")
-	log.Criticalf("Divide by zero %s", "0")
+    responseJson, err := json.Marshal(response)
+    if err != nil {
+        fmt.Println("Error while JSON marshal")
+    }
+
+    log.Info(string(responseJson), "Another message", "Another awesome message")
+	log.Critical("Divide by zero", "This is another message')
+	log.Info("Created", "since", 1990)
 
 	log.Api(logger.ApiLoggerFields{Ip: "192.168.0.1",
 		Url:        "getRechargeData",
