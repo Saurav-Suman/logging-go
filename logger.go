@@ -78,27 +78,27 @@ func FeedDataForConversion(a ...interface{}) string {
 }
 
 func (l *SystemLoggerConfig) Debug(msg ...interface{}) {
-	l.LogMe(levelDebug, l.QueueNames.Debug, msg)
+	l.LogMe(levelDebug, l.QueueNames.Debug, msg...)
 }
 
 func (l *SystemLoggerConfig) Info(msg ...interface{}) {
-	l.LogMe(levelInfo, l.QueueNames.Info, msg)
+	l.LogMe(levelInfo, l.QueueNames.Info, msg...)
 }
 
 func (l *SystemLoggerConfig) Warn(msg ...interface{}) {
-	l.LogMe(levelWarn, l.QueueNames.Warn, msg)
+	l.LogMe(levelWarn, l.QueueNames.Warn, msg...)
 }
 
 func (l *SystemLoggerConfig) Error(msg ...interface{}) {
-	l.LogMe(levelErr, l.QueueNames.Error, msg)
+	l.LogMe(levelErr, l.QueueNames.Error, msg...)
 }
 
 func (l *SystemLoggerConfig) Critical(msg ...interface{}) {
-	l.LogMe(levelCrit, l.QueueNames.Critical, msg)
+	l.LogMe(levelCrit, l.QueueNames.Critical, msg...)
 }
 
 func (l *SystemLoggerConfig) IO(msg ...interface{}) {
-	l.LogConsole(levelIO, l.QueueNames.IO, msg)
+	l.LogConsole(levelIO, l.QueueNames.IO, msg...)
 }
 
 /*
@@ -130,7 +130,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg ...interf
 		log.Fatalf("%s", "Environment variable `app` missing in env file")
 	}
 
-	var msgData = FeedDataForConversion(msg)
+	var msgData = FeedDataForConversion(msg...)
 	fmt.Println("Converted message: ", msgData)
 	data := SystemLoogerFields{
 		Source:    os.Getenv("app"),
@@ -147,7 +147,7 @@ func (s *SystemLoggerConfig) LogMe(logLevel int, queueName string, msg ...interf
 	if !s.Console {
 		publisher.Publish(s.QueuePrefix, queueName, data)
 	} else {
-		publisher.Publish(s.QueuePrefix, queueName, msg)
+		publisher.Publish(s.QueuePrefix, queueName, data)
 	}
 	return
 }
@@ -158,7 +158,7 @@ func (s *SystemLoggerConfig) LogConsole(logLevel int, queueName string, msg ...i
 		log.Fatalf("%s", "Environment variable `app` missing in env file")
 	}
 
-	var msgData = FeedDataForConversion(msg)
+	var msgData = FeedDataForConversion(msg...)
 	fmt.Println("Converted message: ", msgData)
 	data := SystemLoogerFields{
 		Source:    os.Getenv("app"),
